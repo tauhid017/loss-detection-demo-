@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaimInsight - Loss Description Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header fixed positioning */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        /* Main content starts after header */
+        .main-content-wrapper {
+            padding-top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header style="background: linear-gradient(90deg, rgba(0, 119, 182, 0.95) 0%, rgba(0, 150, 220, 0.9) 100%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 8px 32px rgba(0, 119, 182, 0.2); transition: all 0.3s ease;">
+        <!-- Logo and Title Container -->
+        <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0;">
+            <!-- Logo Box -->
+            <div style="height: 50px; min-width: 50px; width: 50px; background-color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.2); transition: all 0.3s ease;" class="logo-box">
+                <span style="font-size: 18px; font-weight: bold; color: #0077B6;">CI</span>
+            </div>
+            
+            <!-- Title -->
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; white-space: nowrap; letter-spacing: 0.5px;">ClaimInsight</h1>
+        </div>
+        
+        <!-- Navigation Container -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button onclick="location.reload()" style="padding: 10px 20px; background-color: white; color: #0077B6; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15); white-space: nowrap;">
+                🏠 Home
+            </button>
+            <button onclick="openSidebar()" style="padding: 10px 20px; background-color: rgba(255, 255, 255, 0.9); color: #0077B6; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15); white-space: nowrap;">
+                ℹ️ About
+            </button>
+            <a href="/history" style="display: flex; align-items: center; gap: 8px; padding: 10px 20px; background-color: white; color: #0077B6; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15); white-space: nowrap; text-decoration: none;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px; stroke-width: 2;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="history-text">History</span>
+            </a>
+        </div>
+
+        <style>
+            /* Header responsive styles */
+            @media (max-width: 1024px) {
+                header {
+                    padding: 14px 16px !important;
+                }
+
+                header h1 {
+                    font-size: 24px !important;
+                }
+
+                header > div:first-child {
+                    gap: 12px !important;
+                }
+
+                header > div:first-child > div {
+                    height: 45px !important;
+                    width: 45px !important;
+                    min-width: 45px !important;
+                }
+
+                header > div:first-child > div span {
+                    font-size: 16px !important;
+                }
+
+                header button,
+                header a {
+                    padding: 9px 16px !important;
+                    font-size: 13px !important;
+                }
+
+                header a svg {
+                    width: 16px !important;
+                    height: 16px !important;
+                }
+            }
+
+            @media (max-width: 768px) {
+                header {
+                    padding: 12px 12px !important;
+                    gap: 8px !important;
+                    flex-wrap: wrap !important;
+                }
+
+                header > div:first-child {
+                    gap: 10px !important;
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                header h1 {
+                    font-size: 20px !important;
+                    letter-spacing: 0px !important;
+                }
+
+                header > div:first-child > div {
+                    height: 42px !important;
+                    width: 42px !important;
+                    min-width: 42px !important;
+                    border-radius: 8px !important;
+                }
+
+                header > div:first-child > div span {
+                    font-size: 14px !important;
+                }
+
+                header > div:last-child {
+                    display: flex !important;
+                    gap: 6px !important;
+                    flex-wrap: wrap !important;
+                }
+
+                header button,
+                header a {
+                    padding: 8px 12px !important;
+                    font-size: 11px !important;
+                    border-radius: 5px !important;
+                    flex: 1 !important;
+                    min-width: auto !important;
+                }
+
+                header a svg {
+                    width: 14px !important;
+                    height: 14px !important;
+                    gap: 4px !important;
+                }
+
+                .history-text {
+                    display: none;
+                }
+
+                header a span {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 640px) {
+                header {
+                    padding: 10px 8px !important;
+                    gap: 6px !important;
+                }
+
+                header h1 {
+                    font-size: 18px !important;
+                }
+
+                header > div:first-child {
+                    gap: 8px !important;
+                }
+
+                header > div:first-child > div {
+                    height: 40px !important;
+                    width: 40px !important;
+                    min-width: 40px !important;
+                }
+
+                header > div:first-child > div span {
+                    font-size: 13px !important;
+                }
+
+                header > div:last-child {
+                    gap: 6px !important;
+                    width: 100% !important;
+                    justify-content: space-between !important;
+                }
+
+                header button,
+                header a {
+                    padding: 8px 10px !important;
+                    font-size: 10px !important;
+                    flex: 1 !important;
+                    min-height: 36px !important;
+                }
+
+                header a svg {
+                    width: 12px !important;
+                    height: 12px !important;
+                }
+
+                .history-text {
+                    display: none;
+                }
+            }
+
+            @media (max-width: 480px) {
+                header {
+                    padding: 8px 8px !important;
+                    gap: 4px !important;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    flex-wrap: wrap !important;
+                    align-content: flex-start !important;
+                }
+
+                header > div:first-child {
+                    gap: 6px !important;
+                    flex: 1;
+                    min-width: 0;
+                    display: flex;
+                    align-items: center;
+                }
+
+                header h1 {
+                    font-size: 16px !important;
+                    margin: 0 !important;
+                }
+
+                header > div:first-child > div {
+                    height: 38px !important;
+                    width: 38px !important;
+                    min-width: 38px !important;
+                    border-radius: 6px !important;
+                }
+
+                header > div:first-child > div span {
+                    font-size: 12px !important;
+                }
+
+                header > div:last-child {
+                    display: flex !important;
+                    gap: 4px !important;
+                    width: 100% !important;
+                    margin-top: 6px !important;
+                    justify-content: stretch !important;
+                }
+
+                header button,
+                header a {
+                    padding: 6px 8px !important;
+                    font-size: 9px !important;
+                    flex: 1 !important;
+                    min-height: 34px !important;
+                    margin: 0 !important;
+                }
+
+                header a svg {
+                    width: 11px !important;
+                    height: 11px !important;
+                }
+
+                header a span,
+                .history-text {
+                    display: none !important;
+                }
+            }
+
+            @media (max-width: 360px) {
+                header {
+                    padding: 6px 6px !important;
+                    gap: 3px !important;
+                }
+
+                header > div:first-child {
+                    gap: 4px !important;
+                }
+
+                header h1 {
+                    font-size: 14px !important;
+                }
+
+                header > div:first-child > div {
+                    height: 36px !important;
+                    width: 36px !important;
+                    min-width: 36px !important;
+                }
+
+                header > div:first-child > div span {
+                    font-size: 11px !important;
+                }
+
+                header > div:last-child {
+                    gap: 3px !important;
+                    margin-top: 4px !important;
+                }
+
+                header button,
+                header a {
+                    padding: 5px 6px !important;
+                    font-size: 8px !important;
+                    min-height: 32px !important;
+                }
+
+                header a svg {
+                    width: 10px !important;
+                    height: 10px !important;
+                }
+            }
+
+            /* Button hover effects */
+            header button:hover,
+            header a:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 119, 182, 0.25) !important;
+                background-color: #f0f0f0 !important;
+            }
+
+            header button:active,
+            header a:active {
+                transform: translateY(0);
+            }
+
+            /* Logo hover effect */
+            .logo-box:hover {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(0, 119, 182, 0.3) !important;
+            }
+
+            /* Smooth transitions */
+            header button,
+            header a {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .logo-box {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+        </style>
+    </header>
+
+    <!-- Sidebar -->
+    <div id="sidebar" style="position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background: linear-gradient(180deg, #0077B6 0%, #005a8b 100%); color: white; padding: 30px; box-shadow: -8px 0 32px rgba(0, 119, 182, 0.4); transition: right 0.3s ease; overflow-y: auto; z-index: 1001;">
+        <h2 style="font-size: 24px; margin-bottom: 20px; border-bottom: 3px solid rgba(255, 255, 255, 0.2); padding-bottom: 15px;">🏠 About ClaimInsight</h2>
+        
+        <p style="margin-bottom: 20px; line-height: 1.6;">ClaimInsight is an AI-powered web application designed to automatically generate professional insurance loss descriptions from damage images.</p>
+        
+        <h3 style="font-size: 20px; margin: 20px 0; background: rgba(255, 255, 255, 0.1); padding: 12px 15px; border-radius: 6px;">💡 Key Features:</h3>
+        <ul style="list-style-type: none; padding-left: 0; margin-bottom: 20px; line-height: 1.6;">
+            <li style="margin-bottom: 10px; padding-left: 10px; border-left: 3px solid transparent; transition: all 0.2s ease;">• Upload damage images for instant analysis</li>
+            <li style="margin-bottom: 10px; padding-left: 10px; border-left: 3px solid transparent; transition: all 0.2s ease;">• AI-powered image recognition</li>
+            <li style="margin-bottom: 10px; padding-left: 10px; border-left: 3px solid transparent; transition: all 0.2s ease;">• Professional insurance descriptions</li>
+            <li style="margin-bottom: 10px; padding-left: 10px; border-left: 3px solid transparent; transition: all 0.2s ease;">• Download PDF reports</li>
+        </ul>
+
+        <h3 style="font-size: 20px; margin: 20px 0; background: rgba(255, 255, 255, 0.1); padding: 12px 15px; border-radius: 6px;">👥 Team:</h3>
+        <div style="margin: 20px 0; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.15);">
+                <span style="font-weight: 500; color: #fff; font-size: 14px;">Shivam Verma</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://www.linkedin.com/in/shivamverma9808/" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="LinkedIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/shivamverma18" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="GitHub">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://codebasics.io/portfolio/Shivam-Verma" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="Portfolio">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0;">
+                <span style="font-weight: 500; color: #fff; font-size: 14px;">Shaikh Tauhid</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://www.linkedin.com/in/shaikh-tauhid-shaikh-javed027/" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="LinkedIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/tauhd017" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="GitHub">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://tauhid-portfolio.vercel.app/" target="_blank" style="color: #fff; opacity: 1; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='translateY(-3px) scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='scale(1)'; this.style.boxShadow='none'" title="Portfolio">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="closeSidebar()" style="padding: 10px 20px; background-color: white; color: #0077B6; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-top: 20px;">Close</button>
+    </div>
+
+    <!-- History Button
+    <div class="history-button" style="top: 80px;margin-top: 10px; right: 20px; z-index: 999; animation: fadeInRight 0.5s ease-out;">
+        <a href="/history" style="display: flex; align-items: center; gap: 10px; background: white; color: #0077B6; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.2); transition: all 0.3s ease;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            History
+        </a>
+    </div> -->
+
+    <!-- Main Content -->
+    <div class="main-content-wrapper" style="padding-top: 0;">
+<div class="main-container" style="max-width: 800px; min-height: auto; max-height: none; margin: 0 auto; padding: 40px 20px; animation: fadeInUp 0.6s ease-out; margin-top: 120px; margin-bottom: 20px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 20px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); overflow: hidden;">
+            <!-- Tagline -->
+            <h2 style="text-align: center; color: white; font-size: 28px; margin-bottom: 50px; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); font-weight: 300; letter-spacing: 0.5px; margin-top: 20px;">
+                "Automating Insurance Claims with AI Precision!"
+            </h2>
+
+            <div style="background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); overflow: hidden;">
+                <h1 style="text-align: center; color: #0077B6; font-size: 40px; margin-bottom: 30px; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05); font-weight: 700;">Loss Description Generator</h1>
+                
+                <!-- Error Alert -->
+                <div id="errorAlert" style="padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; animation: slideInDown 0.3s ease-out; display: flex; align-items: center; gap: 10px; background-color: #fee; color: #c33; border-left: 5px solid #c33; display: none; flex-wrap: wrap;">
+                    <span id="errorMessage"></span>
+                </div>
+
+                <!-- Upload Area -->
+                <div style="margin-bottom: 20px;">
+                    <label for="imageUpload" style="display: flex; align-items: center; gap: 10px; color: #0077B6; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px; stroke-width: 2.5; flex-shrink: 0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Upload Damage Images
+                    </label>
+                </div>
+                
+                <!-- Upload Container -->
+                <div id="uploadContainer" style="border: 3px dashed #48CAE4; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, rgba(72, 202, 228, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%); overflow: hidden;" onclick="document.getElementById('imageUpload').click()">
+                    <form id="upload-file" method="post" enctype="multipart/form-data" style="display: none;">
+                        <input type="file" name="file" id="imageUpload" accept=".png, .jpg, .jpeg">
+                    </form>
+                    
+                    <!-- Preview Section -->
+                    <div id="previewContainer" style="text-align: center; padding: 20px; background: white; border-radius: 8px; border: 2px solid #48CAE4; display: none; overflow: hidden;">
+                        <p><strong>Selected file:</strong> <span id="fileName" style="word-break: break-all;"></span></p>
+                        <div style="max-width: 100%; overflow: auto;">
+                            <img id="previewImage" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 15px; box-shadow: 0 6px 20px rgba(0, 119, 182, 0.15); transition: transform 0.3s ease; display: block; margin-left: auto; margin-right: auto;" src="#" alt="Preview"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Default Upload Text -->
+                    <div id="uploadText">
+                        <p style="color: #0077B6; font-weight: 600; margin: 0;">Click to upload or drag and drop</p>
+                        <p style="color: #666; font-size: 0.875rem; margin-top: 0.5rem; margin-bottom: 0;">Supports JPG, PNG, JPEG (Max 16MB)</p>
+                    </div>
+                </div>
+
+                <!-- Damage Type Selection -->
+                <div style="margin-bottom: 25px; margin-top: 25px;">
+                    <label for="damageType" style="display: block; margin-bottom: 10px; color: #0077B6; font-weight: 600; font-size: 15px;">Damage Type</label>
+                    <select id="damageType" style="width: 100%; padding: 14px 16px; border: 2px solid #48CAE4; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; font-family: inherit; background: white; color: #333; box-sizing: border-box;">
+                        <option value="Hail Damage">Hail Damage</option>
+                        <option value="Flood Damage">Flood Damage</option>
+                        <option value="Fire Damage">Fire Damage</option>
+                        <option value="Collision Damage">Collision Damage</option>
+                        <option value="Vandalism">Vandalism</option>
+                        <option value="Water Damage">Water Damage</option>
+                        <option value="Storm Damage">Storm Damage</option>
+                        <option value="Theft">Theft</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Custom Damage Input -->
+                <div id="customDamageGroup" style="margin-bottom: 25px; display: none;">
+                    <label for="customDamage" style="display: block; margin-bottom: 10px; color: #0077B6; font-weight: 600; font-size: 15px;">Specify Damage Type</label>
+                    <input type="text" id="customDamage" style="width: 100%; padding: 14px 16px; border: 2px solid #48CAE4; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; font-family: inherit; background: white; color: #333; box-sizing: border-box;" placeholder="Enter specific damage type...">
+                </div>
+
+                <!-- Generate Button -->
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 30px;">
+                    <button onclick="initializeUploadContainer()" style="display: flex; align-items: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #48CAE4 0%, #0077B6 100%); color: white; flex-shrink: 0;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; stroke-width: 2.5; flex-shrink: 0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Re-upload
+                    </button>
+                    <button id="generateBtn" style="display: flex; align-items: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #0077B6 0%, #0098dc 100%); color: white; flex-shrink: 0;" disabled>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; stroke-width: 2.5; flex-shrink: 0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                        Generate Loss Description
+                    </button>
+                </div>
+
+                <!-- Loading Section -->
+                <div id="loadingSection" style="text-align: center; padding: 40px; display: none;">
+                    <div style="border: 5px solid rgba(0, 119, 182, 0.3); border-radius: 50%; border-top: 5px solid #0077B6; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);"></div>
+                    <p style="text-align: center; color: #0077B6; margin-top: 1rem; font-weight: bold; font-size: 15px;">AI is analyzing the image and generating professional description...</p>
+                </div>
+
+                <!-- RESULTS SECTION -->
+                <div id="resultsSection" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 255, 0.95) 100%); border: 2px solid #48CAE4; border-radius: 12px; box-shadow: 0 12px 40px rgba(0, 119, 182, 0.15); animation: fadeInUp 0.5s ease-out; margin-top: 2rem; padding: 1.5rem; display: none; overflow: hidden;">
+                    <h2 style="color: #0077B6; margin-bottom: 1rem; text-align: center; font-size: 24px; margin-top: 0;">📋 Damage Assessment Results</h2>
+                    
+                    <!-- Damage Type -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; color: #0077B6; font-weight: bold; font-size: 15px;">Damage Type</label>
+                        <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #0077B6; box-shadow: 0 2px 8px rgba(0, 119, 182, 0.1); word-break: break-word; overflow: hidden;">
+                            <p id="damageTypeDisplay" style="color: #333; line-height: 1.8; font-size: 15px; font-weight: bold; color: #0077B6; margin: 0;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Image Analysis -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; color: #0077B6; font-weight: bold; font-size: 15px;">🖼️ AI Image Analysis</label>
+                        <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #0077B6; box-shadow: 0 2px 8px rgba(0, 119, 182, 0.1); word-break: break-word; overflow: hidden;">
+                            <p id="imageCaption" style="color: #333; line-height: 1.8; font-size: 15px; margin: 0;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Loss Description -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 10px; color: #0077B6; font-weight: bold; font-size: 15px;">📄 Professional Loss Description</label>
+                        <div style="background: white; padding: 16px; border-radius: 8px; border-left: 4px solid #0077B6; box-shadow: 0 2px 8px rgba(0, 119, 182, 0.1); word-break: break-word; overflow: auto; max-height: 400px;">
+                            <p id="lossDescription" style="color: #333; line-height: 1.8; font-size: 15px; white-space: pre-wrap; margin: 0;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Download Buttons -->
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem;">
+                        <button id="downloadPdfBtn" style="display: flex; align-items: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; flex-shrink: 0;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; stroke-width: 2.5; flex-shrink: 0;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download PDF
+                        </button>
+                        <button id="downloadTextBtn" style="display: flex; align-items: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #FF9800 0%, #e68900 100%); color: white; flex-shrink: 0;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; stroke-width: 2.5; flex-shrink: 0;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download Text
+                        </button>
+                        <button onclick="location.reload()" style="display: flex; align-items: center; gap: 10px; padding: 14px 28px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #757575 0%, #616161 100%); color: white; flex-shrink: 0;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; stroke-width: 2.5; flex-shrink: 0;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            New Assessment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #uploadContainer:hover {
+            border-color: #0077B6;
+            background: linear-gradient(135deg, rgba(72, 202, 228, 0.1) 0%, rgba(0, 119, 182, 0.1) 100%);
+            transform: scale(1.01);
+        }
+
+        #uploadContainer.dragover {
+            border-color: #0077B6;
+            background: linear-gradient(135deg, rgba(72, 202, 228, 0.15) 0%, rgba(0, 119, 182, 0.15) 100%);
+            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.2);
+        }
+
+        /* Responsive Design - Main Container */
+        @media (max-width: 1024px) {
+            .main-container {
+                max-width: 750px;
+                padding: 35px 25px;
+                margin-top: 110px;
+            }
+
+            h2 {
+                font-size: 26px !important;
+                margin-bottom: 40px !important;
+            }
+
+            h1 {
+                font-size: 36px !important;
+                margin-bottom: 25px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                max-width: 100%;
+                padding: 25px 18px;
+                margin-top: 100px;
+                margin-bottom: 20px;
+                border-radius: 16px;
+                max-height: none;
+            }
+
+            h2 {
+                font-size: 22px !important;
+                margin-bottom: 30px !important;
+            }
+
+            h1 {
+                font-size: 28px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .main-container > div {
+                padding: 30px 20px !important;
+                border-radius: 14px !important;
+            }
+
+            /* Upload Container */
+            #uploadContainer {
+                padding: 30px 20px !important;
+                border-width: 2px !important;
+            }
+
+            /* Form Elements */
+            label {
+                font-size: 14px !important;
+                margin-bottom: 8px !important;
+            }
+
+            select, input[type="text"] {
+                padding: 12px 14px !important;
+                font-size: 14px !important;
+            }
+
+            /* Buttons */
+            button {
+                padding: 12px 20px !important;
+                font-size: 14px !important;
+                gap: 8px !important;
+            }
+
+            button svg {
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            /* Results Section */
+            #resultsSection {
+                padding: 25px 18px !important;
+            }
+
+            #resultsSection label {
+                font-size: 14px !important;
+                margin-bottom: 10px !important;
+            }
+
+            #resultsSection > div {
+                padding: 14px !important;
+                border-radius: 6px !important;
+            }
+
+            #resultsSection p {
+                font-size: 14px !important;
+                line-height: 1.6 !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 20px 14px;
+                margin-top: 90px;
+                border-radius: 14px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%) !important;
+            }
+
+            h2 {
+                font-size: 20px !important;
+                margin-bottom: 25px !important;
+                line-height: 1.4 !important;
+            }
+
+            h1 {
+                font-size: 24px !important;
+                margin-bottom: 18px !important;
+            }
+
+            .main-container > div {
+                padding: 20px 15px !important;
+                border-radius: 12px !important;
+            }
+
+            /* Upload Area */
+            #uploadContainer {
+                padding: 25px 15px !important;
+                border-width: 2px !important;
+                border-radius: 10px !important;
+                margin-bottom: 15px !important;
+            }
+
+            #uploadContainer p:first-child {
+                font-size: 14px !important;
+                font-weight: 600 !important;
+            }
+
+            #uploadContainer p:last-child {
+                font-size: 12px !important;
+            }
+
+            /* Preview */
+            #previewContainer {
+                padding: 15px !important;
+                font-size: 13px !important;
+            }
+
+            #previewImage {
+                max-height: 250px !important;
+            }
+
+            /* Form Fields */
+            label {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+                font-weight: 600 !important;
+            }
+
+            select, input[type="text"] {
+                padding: 11px 13px !important;
+                font-size: 13px !important;
+                border-radius: 6px !important;
+            }
+
+            /* Button Styles */
+            button {
+                padding: 11px 16px !important;
+                font-size: 13px !important;
+                border-radius: 6px !important;
+                flex: 1 !important;
+            }
+
+            button svg {
+                width: 16px !important;
+                height: 16px !important;
+                stroke-width: 2 !important;
+            }
+
+            /* Button Container - Stack on mobile */
+            button {
+                min-width: calc(50% - 8px) !important;
+            }
+
+            /* Results Section */
+            #resultsSection {
+                padding: 20px 15px !important;
+                border-radius: 12px !important;
+                margin-top: 15px !important;
+            }
+
+            #resultsSection h2 {
+                font-size: 20px !important;
+                margin-bottom: 15px !important;
+            }
+
+            #resultsSection > div {
+                margin-bottom: 18px !important;
+                padding: 12px !important;
+                border-radius: 6px !important;
+            }
+
+            #resultsSection label {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+            }
+
+            #resultsSection p {
+                font-size: 13px !important;
+                line-height: 1.6 !important;
+            }
+
+            /* Loading Section */
+            #loadingSection {
+                padding: 30px 15px !important;
+            }
+
+            #loadingSection > div:first-child {
+                width: 45px !important;
+                height: 45px !important;
+            }
+
+            #loadingSection p {
+                font-size: 13px !important;
+                margin-top: 12px !important;
+            }
+
+            /* Error Alert */
+            #errorAlert {
+                padding: 12px 15px !important;
+                font-size: 13px !important;
+                border-radius: 6px !important;
+                margin-bottom: 15px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 15px 10px;
+                margin-top: 80px;
+                max-height: none;
+                border: 2px solid rgba(255, 255, 255, 0.15) !important;
+                border-radius: 12px;
+            }
+
+            h2 {
+                font-size: 18px !important;
+                margin-bottom: 20px !important;
+                margin-top: 10px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+                margin-bottom: 15px !important;
+            }
+
+            .main-container > div {
+                padding: 16px 12px !important;
+                border-radius: 10px !important;
+            }
+
+            /* Upload Area */
+            #uploadContainer {
+                padding: 20px 12px !important;
+                border-width: 2px !important;
+                margin-bottom: 12px !important;
+            }
+
+            #uploadContainer p:first-child {
+                font-size: 13px !important;
+            }
+
+            #uploadContainer p:last-child {
+                font-size: 11px !important;
+            }
+
+            /* Preview */
+            #previewContainer {
+                padding: 12px !important;
+                font-size: 12px !important;
+            }
+
+            #previewImage {
+                max-height: 200px !important;
+                margin-top: 10px !important;
+            }
+
+            /* Form Elements */
+            label {
+                font-size: 12px !important;
+                margin-bottom: 6px !important;
+            }
+
+            select, input[type="text"] {
+                padding: 10px 12px !important;
+                font-size: 12px !important;
+                border-width: 1.5px !important;
+            }
+
+            /* Damage Type div spacing */
+            div[style*="margin-bottom: 25px"] {
+                margin-bottom: 15px !important;
+            }
+
+            div[style*="margin-bottom: 25px; margin-top: 25px"] {
+                margin-bottom: 15px !important;
+                margin-top: 15px !important;
+            }
+
+            /* Buttons Container */
+            div[style*="display: flex; gap: 15px"] {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            button {
+                padding: 10px 14px !important;
+                font-size: 12px !important;
+                width: 100% !important;
+                border-radius: 6px !important;
+            }
+
+            button svg {
+                width: 15px !important;
+                height: 15px !important;
+            }
+
+            /* Results Section */
+            #resultsSection {
+                padding: 16px 12px !important;
+                border-radius: 10px !important;
+                margin-top: 12px !important;
+            }
+
+            #resultsSection h2 {
+                font-size: 18px !important;
+                margin-bottom: 12px !important;
+            }
+
+            #resultsSection > div {
+                margin-bottom: 15px !important;
+                padding: 11px !important;
+                border-radius: 6px !important;
+            }
+
+            #resultsSection label {
+                font-size: 12px !important;
+                margin-bottom: 6px !important;
+            }
+
+            #resultsSection p {
+                font-size: 12px !important;
+                line-height: 1.5 !important;
+            }
+
+            /* Loading Section */
+            #loadingSection {
+                padding: 25px 10px !important;
+            }
+
+            #loadingSection > div:first-child {
+                width: 40px !important;
+                height: 40px !important;
+                border-width: 4px !important;
+            }
+
+            #loadingSection p {
+                font-size: 12px !important;
+                margin-top: 10px !important;
+            }
+
+            /* Error Alert */
+            #errorAlert {
+                padding: 10px 12px !important;
+                font-size: 12px !important;
+                gap: 8px !important;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .main-container {
+                padding: 12px 8px;
+                margin-top: 75px;
+            }
+
+            h2 {
+                font-size: 16px !important;
+                margin-bottom: 15px !important;
+            }
+
+            h1 {
+                font-size: 20px !important;
+                margin-bottom: 12px !important;
+            }
+
+            .main-container > div {
+                padding: 12px 10px !important;
+            }
+
+            #uploadContainer {
+                padding: 16px 10px !important;
+            }
+
+            #uploadContainer p:first-child {
+                font-size: 12px !important;
+            }
+
+            #uploadContainer p:last-child {
+                font-size: 10px !important;
+            }
+
+            label {
+                font-size: 11px !important;
+            }
+
+            select, input[type="text"] {
+                padding: 9px 10px !important;
+                font-size: 11px !important;
+            }
+
+            button {
+                padding: 8px 12px !important;
+                font-size: 11px !important;
+            }
+
+            button svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+
+            #resultsSection {
+                padding: 12px 10px !important;
+            }
+
+            #resultsSection h2 {
+                font-size: 16px !important;
+            }
+
+            #resultsSection p {
+                font-size: 11px !important;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            button, a, select {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            button {
+                padding: 12px 16px !important;
+            }
+        }
+
+        /* Improved Results Section styling */
+        #resultsSection div[style*="margin-bottom: 25px"] {
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        #resultsSection div[style*="margin-bottom: 25px"]:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.15) !important;
+        }
+
+        /* Download buttons container */
+        #resultsSection > div:last-of-type {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 640px) {
+            #resultsSection > div:last-of-type {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #resultsSection > div:last-of-type button {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <script>
+        // Store current image data for PDF generation
+        let currentImageData = '';
+
+        // Initialize file upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            handleFileSelect(e);
+        });
+
+        // Damage type change handler
+        document.getElementById('damageType').addEventListener('change', function() {
+            const customDamageGroup = document.getElementById('customDamageGroup');
+            if (this.value === 'Other') {
+                customDamageGroup.style.display = 'block';
+            } else {
+                customDamageGroup.style.display = 'none';
+            }
+        });
+
+        // Generate button handler
+        document.getElementById('generateBtn').addEventListener('click', processImage);
+
+        // PDF Download button handler
+        document.getElementById('downloadPdfBtn').addEventListener('click', downloadPDF);
+
+        // Text Download button handler
+        document.getElementById('downloadTextBtn').addEventListener('click', downloadText);
+
+        // Sidebar functions
+        function openSidebar() {
+            document.getElementById('sidebar').style.right = '0';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').style.right = '-400px';
+        }
+
+        // Initialize upload container
+        function initializeUploadContainer() {
+            const uploadContainer = document.getElementById('uploadContainer');
+            const previewContainer = document.getElementById('previewContainer');
+            const uploadText = document.getElementById('uploadText');
+            const fileInput = document.getElementById('imageUpload');
+            
+            // Reset file input
+            fileInput.value = '';
+            
+            // Hide preview and show upload text
+            previewContainer.style.display = 'none';
+            uploadText.style.display = 'block';
+            
+            // Reset generate button
+            document.getElementById('generateBtn').disabled = true;
+            
+            // Clear any existing results
+            document.getElementById('resultsSection').style.display = 'none';
+            
+            // Clear stored image data
+            currentImageData = '';
+        }
+
+        // File handling functions
+        function handleFiles(file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                showError('Please select a valid image file (JPEG, PNG, or GIF)');
+                return;
+            }
+            
+            if (file.size > 16 * 1024 * 1024) {
+                showError('File size too large. Please select an image smaller than 16MB.');
+                return;
+            }
+            
+            document.getElementById('fileName').textContent = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('previewContainer').style.display = 'block';
+                document.getElementById('uploadText').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+                
+                // Store image data for PDF
+                currentImageData = e.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+            
+            hideError();
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFiles(file);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('uploadContainer').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('uploadContainer').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('uploadContainer').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFiles(files[0]);
+            }
+        }
+
+        // Process image function
+        async function processImage() {
+            const file = document.getElementById('imageUpload').files[0];
+            const damageType = document.getElementById('damageType').value;
+            const customDamage = document.getElementById('customDamage').value;
+            
+            if (!file) {
+                showError('Please select an image file first.');
+                return;
+            }
+            
+            showLoading();
+            document.getElementById('generateBtn').disabled = true;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('damage_type', damageType);
+            if (customDamage) {
+                formData.append('custom_damage', customDamage);
+            }
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'An error occurred while processing the image.');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                hideLoading();
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('damageTypeDisplay').textContent = data.damage_type;
+            document.getElementById('imageCaption').textContent = data.image_caption;
+            document.getElementById('lossDescription').textContent = data.loss_description;
+            
+            // Store data for downloads
+            document.getElementById('downloadPdfBtn').setAttribute('data-description', data.loss_description);
+            document.getElementById('downloadPdfBtn').setAttribute('data-damage-type', data.damage_type);
+            document.getElementById('downloadTextBtn').setAttribute('data-description', data.loss_description);
+            document.getElementById('downloadTextBtn').setAttribute('data-damage-type', data.damage_type);
+            
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function downloadPDF() {
+            const description = document.getElementById('downloadPdfBtn').getAttribute('data-description');
+            const damageType = document.getElementById('downloadPdfBtn').getAttribute('data-damage-type');
+            
+            try {
+                const response = await fetch('/download-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        description: description,
+                        damage_type: damageType,
+                        image_data: currentImageData
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `loss_description_${damageType.replace(' ', '_')}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    showError('Failed to generate PDF.');
+                }
+            } catch (error) {
+                showError('PDF download error: ' + error.message);
+            }
+        }
+
+        async function downloadText() {
+            const description = document.getElementById('downloadTextBtn').getAttribute('data-description');
+            const damageType = document.getElementById('downloadTextBtn').getAttribute('data-damage-type');
+            
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        description: description,
+                        damage_type: damageType
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `loss_description_${damageType.replace(' ', '_')}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    showError('Failed to download text file.');
+                }
+            } catch (error) {
+                showError('Download error: ' + error.message);
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSection').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').style.display = 'flex';
+            document.getElementById('errorAlert').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideError() {
+            document.getElementById('errorAlert').style.display = 'none';
+        }
+
+        // Initialize drag and drop
+        document.getElementById('uploadContainer').addEventListener('dragover', handleDragOver);
+        document.getElementById('uploadContainer').addEventListener('dragleave', handleDragLeave);
+        document.getElementById('uploadContainer').addEventListener('drop', handleDrop);
+    </script>
+</body>
+</html>

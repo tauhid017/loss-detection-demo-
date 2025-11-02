@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading - ClaimInsight</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes progressAnimation {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        /* Loading Container */
+        .loading-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-out;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Loading Icon */
+        .loading-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Loading Title */
+        .loading-title {
+            color: #0077B6;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        /* Loading Message */
+        .loading-message {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Loader Dots */
+        .loader-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 30px 0;
+        }
+
+        .loader-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0077B6 0%, #48CAE4 100%);
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .loader-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .loader-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loader-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 119, 182, 0.1);
+            border-radius: 3px;
+            margin-top: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0077B6 0%, #48CAE4 100%);
+            border-radius: 3px;
+            animation: shimmer 2s ease-in-out infinite;
+            width: 100%;
+        }
+
+        /* Status Steps */
+        .status-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 35px;
+        }
+
+        .status-step {
+            padding: 12px 8px;
+            background: rgba(0, 119, 182, 0.05);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(0, 119, 182, 0.1);
+            line-height: 1.4;
+        }
+
+        .status-step.active {
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.1) 0%, rgba(72, 202, 228, 0.1) 100%);
+            border-color: #0077B6;
+            color: #0077B6;
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+
+        .status-step::before {
+            content: '✓';
+            display: inline-block;
+            margin-right: 4px;
+            color: #48CAE4;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-step.active::before {
+            opacity: 1;
+        }
+
+        /* Loading Submessage */
+        .loading-submessage {
+            color: #999;
+            font-size: 14px;
+            margin-top: 15px;
+            font-style: italic;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Tablet Styles (1024px and below) */
+        @media (max-width: 1024px) {
+            .loading-container {
+                padding: 50px 35px;
+                max-width: 480px;
+            }
+
+            .loading-title {
+                font-size: 26px;
+            }
+
+            .loading-message {
+                font-size: 15px;
+            }
+
+            .loading-icon {
+                font-size: 46px;
+            }
+        }
+
+        /* Mobile Landscape / Large Phone (768px and below) */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .loading-container {
+                padding: 40px 30px;
+                border-radius: 16px;
+                max-width: 100%;
+            }
+
+            .loading-title {
+                font-size: 24px;
+                margin-bottom: 12px;
+            }
+
+            .loading-message {
+                font-size: 15px;
+                margin-bottom: 8px;
+            }
+
+            .loading-icon {
+                font-size: 44px;
+                margin-bottom: 12px;
+            }
+
+            .loader-dots {
+                gap: 7px;
+                margin: 25px 0;
+            }
+
+            .loader-dot {
+                width: 11px;
+                height: 11px;
+            }
+
+            .progress-bar-container {
+                margin-top: 20px;
+                height: 5px;
+            }
+
+            .status-steps {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-top: 25px;
+            }
+
+            .status-step {
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+
+            .loading-submessage {
+                font-size: 13px;
+                margin-top: 12px;
+            }
+        }
+
+        /* Standard Phone (640px and below) */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .loading-container {
+                padding: 35px 25px;
+                border-radius: 14px;
+            }
+
+            .loading-title {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+
+            .loading-message {
+                font-size: 14px;
+            }
+
+            .loading-icon {
+                font-size: 42px;
+                margin-bottom: 10px;
+            }
+
+            .loader-dots {
+                gap: 6px;
+                margin: 22px 0;
+            }
+
+            .loader-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .progress-bar-container {
+                margin-top: 18px;
+                height: 5px;
+            }
+
+            .status-steps {
+                gap: 8px;
+                margin-top: 22px;
+            }
+
+            .status-step {
+                font-size: 11px;
+                padding: 9px 6px;
+                border-radius: 6px;
+            }
+
+            .status-step.active {
+                transform: scale(1.03);
+            }
+
+            .loading-submessage {
+                font-size: 12px;
+                margin-top: 10px;
+            }
+        }
+
+        /* Small Phone (480px and below) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .loading-container {
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+
+            .loading-title {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .loading-message {
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .loading-icon {
+                font-size: 38px;
+                margin-bottom: 8px;
+            }
+
+            .loader-dots {
+                gap: 6px;
+                margin: 20px 0;
+            }
+
+            .loader-dot {
+                width: 9px;
+                height: 9px;
+            }
+
+            .progress-bar-container {
+                margin-top: 16px;
+                height: 4px;
+            }
+
+            .status-steps {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 7px;
+                margin-top: 20px;
+            }
+
+            .status-step {
+                font-size: 10px;
+                padding: 8px 5px;
+                border-radius: 5px;
+            }
+
+            .status-step::before {
+                margin-right: 3px;
+            }
+
+            .loading-submessage {
+                font-size: 11px;
+                margin-top: 8px;
+                line-height: 1.4;
+            }
+        }
+
+        /* Extra Small Phone (360px and below) */
+        @media (max-width: 360px) {
+            body {
+                padding: 8px;
+            }
+
+            .loading-container {
+                padding: 25px 16px;
+                border-radius: 10px;
+            }
+
+            .loading-title {
+                font-size: 18px;
+                margin-bottom: 6px;
+            }
+
+            .loading-message {
+                font-size: 12px;
+            }
+
+            .loading-icon {
+                font-size: 34px;
+                margin-bottom: 6px;
+            }
+
+            .loader-dots {
+                gap: 5px;
+                margin: 18px 0;
+            }
+
+            .loader-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .progress-bar-container {
+                margin-top: 14px;
+                height: 4px;
+            }
+
+            .status-steps {
+                gap: 6px;
+                margin-top: 18px;
+            }
+
+            .status-step {
+                font-size: 9px;
+                padding: 7px 4px;
+            }
+
+            .loading-submessage {
+                font-size: 10px;
+                margin-top: 6px;
+            }
+        }
+
+        /* Ultra Small Screens (320px and below) */
+        @media (max-width: 320px) {
+            body {
+                padding: 5px;
+            }
+
+            .loading-container {
+                padding: 20px 12px;
+                border-radius: 8px;
+            }
+
+            .loading-title {
+                font-size: 16px;
+            }
+
+            .loading-message {
+                font-size: 11px;
+            }
+
+            .loading-icon {
+                font-size: 30px;
+            }
+
+            .loader-dots {
+                gap: 4px;
+                margin: 15px 0;
+            }
+
+            .loader-dot {
+                width: 7px;
+                height: 7px;
+            }
+
+            .status-steps {
+                gap: 5px;
+                margin-top: 15px;
+            }
+
+            .status-step {
+                font-size: 8px;
+                padding: 6px 3px;
+            }
+
+            .loading-submessage {
+                font-size: 9px;
+            }
+        }
+
+        /* Landscape Orientation Adjustments */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .loading-container {
+                padding: 30px 35px;
+            }
+
+            .loading-icon {
+                font-size: 32px;
+                margin-bottom: 8px;
+            }
+
+            .loading-title {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .loader-dots {
+                margin: 15px 0;
+            }
+
+            .status-steps {
+                margin-top: 15px;
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .status-step {
+                padding: 8px 6px;
+                font-size: 10px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .loading-container {
+                box-shadow: none;
+                background: white;
+            }
+
+            .loader-dots,
+            .progress-bar-container,
+            .loading-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="loading-icon">🔄</div>
+        <div class="loading-title">ClaimInsight</div>
+        <div class="loading-message">
+            AI is analyzing your claim...
+        </div>
+        <div class="loader-dots">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="status-steps">
+            <div class="status-step active">📤 Received</div>
+            <div class="status-step">🔍 Analyzing</div>
+            <div class="status-step">✨ Processing</div>
+            <div class="status-step">✅ Complete</div>
+        </div>
+        <div class="loading-submessage">
+            This may take a few moments. Thank you for your patience.
+        </div>
+    </div>
+
+    <script>
+        // Simulate step progression for demo purposes
+        const steps = document.querySelectorAll('.status-step');
+        let currentStep = 0;
+
+        function updateStep() {
+            if (currentStep < steps.length) {
+                steps[currentStep].classList.add('active');
+                currentStep++;
+                
+                if (currentStep < steps.length) {
+                    setTimeout(updateStep, 1500);
+                }
+            }
+        }
+
+        // Start progression after initial delay
+        setTimeout(updateStep, 1000);
+    </script>
+</body>
+</html>
